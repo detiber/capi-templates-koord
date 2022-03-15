@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base-v1alpha3
+
+components:
+  - ../../components/providerid
+  - ../../components/external-cloud-provider
+  - ../../components/preKubeadmCommands
+  - ../../components/kubevip-static
+  - ../../components/cpem-no-eip
+#  - ../../components/hacky-eip-workaround
+  - ../../components/crs-calico
+  - ../../components/crs-kube-vip

@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+- patch: |-
+    - op: add
+      path: /spec/kubeadmConfigSpec/postKubeadmCommands/-
+      value: |-
+             cat <<EOF >> /etc/network/interfaces
+             auto lo:0
+             iface lo:0 inet static
+               address {{ .controlPlaneEndpoint }}
+               netmask 255.255.255.255
+             EOF
+             systemctl restart networking
+  target:
+    kind: KubeadmControlPlane
+- patch: |
+    - op: add
+      path: /spec/kubeadmConfigSpec/preKubeadmCommands/-
+      value: |-
+             ping -c 3 -q {{ .controlPlaneEndpoint }} && echo OK \
+             || ip addr add {{ .controlPlaneEndpoint }} dev lo
+  target:
+    kind: KubeadmControlPlane

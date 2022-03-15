@@ -1,0 +1,17 @@
+---
+# ClusterResourceSet object with
+# a selector that targets all the Cluster with label cni=${CLUSTER_NAME}-crs-calico
+apiVersion: addons.cluster.x-k8s.io/v1beta1
+kind: ClusterResourceSet
+metadata:
+  name:  "${CLUSTER_NAME}-crs-kube-vip"
+spec:
+  strategy: ApplyOnce
+  clusterSelector:
+    matchLabels:
+      kube-vip: "${CLUSTER_NAME}-crs-kube-vip"
+  resources:
+    - name: "${CLUSTER_NAME}-crs-kube-vip-rbac"
+      kind: ConfigMap
+    - name: "${CLUSTER_NAME}-crs-kube-vip"
+      kind: ConfigMap
