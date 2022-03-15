@@ -9,7 +9,14 @@
 
 ## enabling CRS for CAPI
 
-TODO
+When deploying (or updating the management cluster):
+```sh
+export EXP_CLUSTER_RESOURCE_SET=true
+
+clusterctl init --infrastructure packet
+```
+
+The Cluster API deployment can be updated manually post install if needed as well: https://cluster-api.sigs.k8s.io/tasks/experimental-features/experimental-features.html#enabling-experimental-features-on-existing-management-clusters
 
 ## Generating the templates
 
