@@ -25,3 +25,21 @@ patches:
         kube-vip: "${CLUSTER_NAME}-crs-kube-vip"
   target:
     kind: Cluster
+- patch: |
+    - op: add
+      path: /spec/kubeadmConfigSpec/preKubeadmCommands/-
+      value: |-
+             GATEWAY_IP=$(curl https://metadata.platformequinix.com/metadata | jq -r ".network.addresses[] | select(.public == false) | .gateway")
+             ip route add 169.254.255.1 via $$GATEWAY_IP
+             ip route add 169.254.255.2 via $$GATEWAY_IP
+  target:
+    kind: KubeadmControlPlane
+- patch: |
+    - op: add
+      path: /spec/template/spec/preKubeadmCommands/-
+      value: |-
+             GATEWAY_IP=$(curl https://metadata.platformequinix.com/metadata | jq -r ".network.addresses[] | select(.public == false) | .gateway")
+             ip route add 169.254.255.1 via $$GATEWAY_IP
+             ip route add 169.254.255.2 via $$GATEWAY_IP
+  target:
+    kind: KubeadmConfigTemplate

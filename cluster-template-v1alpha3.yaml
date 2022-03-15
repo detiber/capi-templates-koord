@@ -2972,6 +2972,10 @@ spec:
         systemctl daemon-reload
         systemctl enable containerd
         systemctl start containerd
+      - |-
+        GATEWAY_IP=$(curl https://metadata.platformequinix.com/metadata | jq -r ".network.addresses[] | select(.public == false) | .gateway")
+        ip route add 169.254.255.1 via $$GATEWAY_IP
+        ip route add 169.254.255.2 via $$GATEWAY_IP
 ---
 apiVersion: cluster.x-k8s.io/v1alpha3
 kind: Cluster
@@ -3098,6 +3102,10 @@ spec:
     - |-
       mkdir -p /etc/kubernetes/manifests
       ctr images pull ghcr.io/kube-vip/kube-vip:v0.4.2 && ctr run --rm --net-host ghcr.io/kube-vip/kube-vip:v0.4.2 vip /kube-vip manifest pod --interface bond0 --address {{ .controlPlaneEndpoint }} --controlplane --arp --leaderElection --metal --metalKey {{ .apiKey }} --metalProjectID ${PROJECT_ID} > /etc/kubernetes/manifests/kube-vip.yaml
+    - |-
+      GATEWAY_IP=$(curl https://metadata.platformequinix.com/metadata | jq -r ".network.addresses[] | select(.public == false) | .gateway")
+      ip route add 169.254.255.1 via $$GATEWAY_IP
+      ip route add 169.254.255.2 via $$GATEWAY_IP
   replicas: ${CONTROL_PLANE_MACHINE_COUNT}
   version: ${KUBERNETES_VERSION}
 ---
