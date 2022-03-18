@@ -13,3 +13,15 @@ components:
 #  - ../../components/hacky-eip-workaround
   - ../../components/crs-calico
   - ../../components/crs-kube-vip
+
+# use addons.cluster.x-k8s.io/v1alpha3 for ClusterResourceSets
+patchesJson6902:
+  - target:
+      group: addons.cluster.x-k8s.io
+      version: v1beta1
+      kind: 'ClusterResourceSet'
+      name: '.*'
+    patch: |-
+      - op: replace
+        path: "/apiVersion"
+        value: addons.cluster.x-k8s.io/v1alpha3
