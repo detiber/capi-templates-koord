@@ -3,13 +3,33 @@ kind: Component
 
 patches:
 - patch: |-
+    kind: KubeadmControlPlane
+    metadata:
+      name: not-used
+    spec:
+      kubeadmConfigSpec:
+        useExperimentalRetryJoin: true
+  target:
+    kind: KubeadmControlPlane
+    version: v1alpha3
+- patch: |-
+    - op: remove
+      path: /spec/kubeadmConfigSpec/joinConfiguration/nodeRegistration/ignorePreflightErrors
+  target:
+    kind: KubeadmControlPlane
+    version: v1alpha3
+- patch: |-
     - op: add
       path: /spec/kubeadmConfigSpec/joinConfiguration/nodeRegistration/ignorePreflightErrors/-
       value: "DirAvailable--etc-kubernetes-manifests"
+  target:
+    kind: KubeadmControlPlane
+    version: v1beta1
+- patch: |-
     - op: add
       path: /spec/kubeadmConfigSpec/preKubeadmCommands/-
       value: |-
         mkdir -p /etc/kubernetes/manifests
-        ctr images pull ghcr.io/kube-vip/kube-vip:v0.4.2 && ctr run --rm --net-host ghcr.io/kube-vip/kube-vip:v0.4.2 vip /kube-vip manifest pod --interface bond0 --address {{ .controlPlaneEndpoint }} --controlplane --arp --leaderElection --metal --metalKey {{ .apiKey }} --metalProjectID ${PROJECT_ID} > /etc/kubernetes/manifests/kube-vip.yaml
+        ctr images pull ghcr.io/kube-vip/kube-vip:v0.4.2 && ctr run --rm --net-host ghcr.io/kube-vip/kube-vip:v0.4.2 vip /kube-vip manifest pod --interface bond0 --address {{ .controlPlaneEndpoint }} --controlplane --arp --leaderElection --leaseDuration=15 --leaseRenewDuration=10 --leaseRetry=2 --metal --metalKey {{ .apiKey }} --metalProjectID ${PROJECT_ID} > /etc/kubernetes/manifests/kube-vip.yaml
   target:
     kind: KubeadmControlPlane

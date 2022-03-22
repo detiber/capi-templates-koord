@@ -3097,7 +3097,7 @@ spec:
       systemctl start containerd
     - |-
       mkdir -p /etc/kubernetes/manifests
-      ctr images pull ghcr.io/kube-vip/kube-vip:v0.4.2 && ctr run --rm --net-host ghcr.io/kube-vip/kube-vip:v0.4.2 vip /kube-vip manifest pod --interface bond0 --address {{ .controlPlaneEndpoint }} --controlplane --arp --leaderElection --metal --metalKey {{ .apiKey }} --metalProjectID ${PROJECT_ID} > /etc/kubernetes/manifests/kube-vip.yaml
+      ctr images pull ghcr.io/kube-vip/kube-vip:v0.4.2 && ctr run --rm --net-host ghcr.io/kube-vip/kube-vip:v0.4.2 vip /kube-vip manifest pod --interface bond0 --address {{ .controlPlaneEndpoint }} --controlplane --arp --leaderElection --leaseDuration=15 --leaseRenewDuration=10 --leaseRetry=2 --metal --metalKey {{ .apiKey }} --metalProjectID ${PROJECT_ID} > /etc/kubernetes/manifests/kube-vip.yaml
     - |-
       GATEWAY_IP=$(curl https://metadata.platformequinix.com/metadata | jq -r ".network.addresses[] | select(.public == false) | .gateway")
       ip route add 169.254.255.1 via $$GATEWAY_IP
